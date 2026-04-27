@@ -1,262 +1,188 @@
-# 🤖 AI Service Desk
-
 <div align="center">
 
-![AI Service Desk Banner](https://img.shields.io/badge/AI%20Service%20Desk-Enterprise%20Grade-6366f1?style=for-the-badge&logo=robot&logoColor=white)
+# 🤖 AI Service Desk
+**Transforming IT Support with AI-Powered Triage and Analysis**
 
-**An enterprise-grade, AI-powered IT support ticketing system**  
-Built with FastAPI · React · Google Gemini · SQLite/PostgreSQL
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](#)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](#)
+[![Gemini API](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](#)
+[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](#)
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react)](https://react.dev)
-[![Gemini](https://img.shields.io/badge/Google%20Gemini-1.5%20Flash-4285F4?style=flat-square&logo=google)](https://ai.google.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+*An intelligent, full-stack ticketing system designed to eliminate manual IT triage bottlenecks.*
 
 </div>
 
 ---
 
-## 🎥 Demo
+## 🧠 Why This Project Exists
 
-> *Screenshot / GIF placeholder — replace with your own recording*
+In modern IT environments, Tier 1 support teams spend countless hours manually reading, categorizing, and prioritizing incoming tickets. This manual triage is notoriously slow, prone to human error, and inconsistent across different agents.
 
-| Ticket Creation | AI Analysis | Analytics |
-|:-:|:-:|:-:|
-| ![create]() | ![analyze]() | ![analytics]() |
+**AI Service Desk** solves this by acting as an intelligent middleware. By leveraging the Google Gemini API, it intercepts tickets upon creation and instantly analyzes them. It predicts categories, assigns priority levels, identifies probable root causes, suggests actionable resolution steps, and even detects similar past tickets—empowering IT teams to resolve issues faster and with higher accuracy.
 
 ---
 
-## 🚀 Project Overview
+## ✨ Key Features
 
-AI Service Desk is a production-ready internal IT support system that leverages **Google Gemini 1.5 Flash** to automatically classify, prioritize, and resolve support tickets. It mirrors real enterprise IT workflows — from ticket submission to AI-driven triage — all behind a sleek glassmorphism UI.
-
-This is not a demo. Every component is production-quality:
-- **Background AI analysis** runs immediately on ticket creation
-- **Structured Gemini output** enforced via strict JSON prompting
-- **Similar ticket detection** using Jaccard similarity
-- **Suggested IT reply generation** for professional comms
-- **Confidence scoring** on every AI analysis
-- **Analytics dashboard** for operational visibility
+- **AI Analysis Engine**: Instantly categorizes tickets (e.g., `bug`, `infrastructure`, `access`) and sets priority levels based on urgency and business impact.
+- **Structured Outputs**: Bypasses generic chatbot responses by strictly enforcing JSON-structured outputs from the LLM, ensuring predictable and parsable data for the backend system.
+- **Suggested Replies**: Automatically drafts professional, empathetic, and context-aware responses tailored to the specific user issue.
+- **Similar Ticket Detection**: Uses Jaccard similarity and tokenization to find related historical tickets, helping agents reference past resolutions.
+- **Background Processing**: Employs background tasks for async AI analysis, ensuring the frontend remains blazingly fast during ticket creation.
+- **Analytics Dashboard**: Visualizes ticket distributions, status tracking, and the AI's average confidence scoring.
 
 ---
 
-## ✨ Features
+## 🏗️ Architecture Overview
 
-### 🎫 Ticket Management
-- Create tickets with title, description, and optional tags
-- Filter by status: `OPEN` · `IN_PROGRESS` · `RESOLVED`
-- Update status inline
-- Soft delete
-
-### 🧠 AI-Powered Analysis (Gemini 1.5 Flash)
-| Field | Description |
-|---|---|
-| **Category** | `bug` · `infrastructure` · `access` · `other` |
-| **Priority** | `low` · `medium` · `high` |
-| **Root Cause** | Concise technical root cause analysis |
-| **Resolution** | Step-by-step fix instructions |
-| **Confidence** | 0–100% AI confidence score |
-
-### ⚡ Elite AI Enhancements
-- **Auto-Analysis** — every new ticket analyzed in background via FastAPI `BackgroundTasks`
-- **Suggested Reply Generator** — professional email drafted for the support agent
-- **Similar Ticket Detection** — Jaccard similarity across all existing tickets
-- **Model Fallback** — auto-falls back to `gemini-1.5-pro-latest` if Flash fails
-
-### 📊 Analytics Dashboard
-- Total ticket count
-- Breakdown by status, category, priority
-- Average AI confidence across all analyzed tickets
-
----
-
-## 🧠 Architecture
+The system is designed with a clean separation of concerns, ensuring scalability and maintainability.
 
 ```mermaid
-graph TD
-    Browser["🌐 React Frontend\n(Vite + TypeScript)"]
+graph LR
+    A[React Frontend] -->|REST API| B(FastAPI Backend)
+    B -->|Async Background Task| C{AI Service Layer}
+    C -->|API Calls| D[Google Gemini API]
+    C -->|Read/Write| E[(SQLite / DB)]
+    B -->|Query| E
+```
 
-    subgraph Backend["⚙️ FastAPI Backend"]
-        API["Routes\n/api/v1/..."]
-        BG["Background Tasks\n(Auto Analysis)"]
-        AI["AI Service\n(ai_service.py)"]
-        DB_Layer["SQLAlchemy ORM"]
-    end
+1. **Client Layer**: A responsive React/Vite SPA provides ticket management and analytics views.
+2. **API Layer**: FastAPI routes handle incoming requests, database sessions, and payload validation.
+3. **AI Service Layer**: A dedicated module isolates all LLM interactions, prompt engineering, and parsing logic.
+4. **Data Layer**: SQLAlchemy ORM manages relational data, making it trivial to swap SQLite for PostgreSQL in production.
 
-    subgraph AI_Layer["🤖 AI Layer"]
-        G1["Gemini 1.5 Flash\n(Primary)"]
-        G2["Gemini 1.5 Pro\n(Fallback)"]
-    end
+---
 
-    subgraph Data["💾 Data Layer"]
-        SQLite["SQLite\n(dev default)"]
-        PG["PostgreSQL\n(production)"]
-    end
+## 🧪 Example Output
 
-    Browser -->|HTTP REST| API
-    API --> BG
-    API --> DB_Layer
-    BG --> AI
-    AI -->|Ticket Analysis| G1
-    AI -->|Fallback| G2
-    AI -->|Reply Generation| G1
-    AI -->|Similarity Detection| DB_Layer
-    DB_Layer --> SQLite
-    DB_Layer --> PG
+The AI engine doesn't just return free text; it returns highly structured, deterministic JSON.
+
+**Input Ticket:**
+> **Title:** Cannot access VPN from home office
+> **Description:** I am unable to connect to the company VPN when working from home. It shows authentication failed error even after entering the correct password and 2FA token.
+
+**System Output:**
+```json
+{
+  "category": "access",
+  "priority": "high",
+  "root_cause": "Potential synchronization issue with the 2FA token or an expired active directory password.",
+  "solution": "1. Verify the user's AD account is not locked.\n2. Ask the user to resync their authenticator app.\n3. If issue persists, generate a temporary bypass code and check VPN gateway logs.",
+  "confidence": 0.92
+}
 ```
 
 ---
 
-## 🛠 Tech Stack
+## ⚙️ Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| **Frontend** | React 18 + Vite + TypeScript | SPA with type safety |
-| **Styling** | Pure CSS (Glassmorphism) | Dark theme, animations |
-| **Backend** | FastAPI 0.115 | Async REST API |
-| **AI** | Google Gemini 1.5 Flash/Pro | Ticket analysis & NLP |
-| **ORM** | SQLAlchemy 2.0 | Database abstraction |
-| **DB (dev)** | SQLite (WAL mode) | Zero-config local dev |
-| **DB (prod)** | PostgreSQL | Production workloads |
-| **Config** | pydantic-settings + `.env` | Secure config management |
-| **Fonts** | Syne + Space Mono + DM Sans | Distinctive typography |
+| Domain | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Backend** | Python, FastAPI | High-performance async API server |
+| **Frontend** | React (Vite), TypeScript | Fast, modern client interface |
+| **Database** | SQLite, SQLAlchemy | Relational data persistence & ORM |
+| **AI Integration** | Google Gemini API SDK | Large Language Model interactions |
 
 ---
 
-## 🔐 Security
+## 🚀 Getting Started
 
-- **API key never exposed** — all Gemini calls are server-side only
-- **`.env` excluded** from version control via `.gitignore`
-- **No key logging** — structured logging filters sensitive fields
-- **CORS configured** — only whitelisted origins accepted
-- **Input validation** — Pydantic schemas validate all request payloads
-- **Error sanitization** — internal errors never leak to client responses
+Follow these steps to run the project locally.
 
----
-
-## ⚡ Run Locally
-
-### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- Google Gemini API key → [Get one free at AI Studio](https://aistudio.google.com)
-
-### 1. Clone the repo
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/ai-service-desk.git
+git clone https://github.com/gouravmit/ai-service-desk.git
 cd ai-service-desk
 ```
 
 ### 2. Backend Setup
 ```bash
 cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-# Configure environment
+Set up your environment variables:
+```bash
 cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
+```
+*Edit `.env` and add your `GEMINI_API_KEY` (Get one from [Google AI Studio](https://aistudio.google.com/)).*
 
-# Start the API server
+Run the FastAPI server:
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-API docs available at: http://localhost:8000/api/docs
-
 ### 3. Frontend Setup
+Open a new terminal window:
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start dev server (proxies /api → localhost:8000)
 npm run dev
 ```
+The application will be available at `http://localhost:5173`.
 
-App available at: http://localhost:5173
+---
 
-### 4. Production (PostgreSQL)
-```bash
-# In .env, change:
-DATABASE_URL=postgresql://user:password@localhost:5432/servicedesk
+## 🔐 Environment Variables
 
-# Run migrations (auto-handled by SQLAlchemy on startup)
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+The backend relies on the `.env` file for configuration. Example:
+
+```env
+# Required: Google Gemini API key
+GEMINI_API_KEY=your_api_key_here
+
+# Optional: Override default SQLite DB path (PostgreSQL example below)
+# DATABASE_URL=postgresql://user:password@localhost:5432/servicedesk
+DATABASE_URL=sqlite:///./servicedesk.db
+
+# Optional: Debug mode
+DEBUG=false
 ```
 
 ---
 
-## 📡 API Reference
+## 📡 API Overview
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/v1/tickets` | Create a new ticket |
-| `GET` | `/api/v1/tickets` | List all tickets (with filters) |
-| `GET` | `/api/v1/tickets/{id}` | Get single ticket |
-| `POST` | `/api/v1/tickets/{id}/analyze` | Run AI analysis |
-| `PATCH` | `/api/v1/tickets/{id}/status` | Update ticket status |
-| `DELETE` | `/api/v1/tickets/{id}` | Delete a ticket |
-| `GET` | `/api/v1/analytics` | Get aggregated analytics |
-| `GET` | `/health` | Health check |
+The backend exposes a clean RESTful API:
 
-Full interactive docs: `http://localhost:8000/api/docs`
+- `POST /api/v1/tickets` — Create a new ticket (triggers async AI analysis)
+- `GET /api/v1/tickets` — Retrieve a list of tickets (supports filtering & pagination)
+- `GET /api/v1/tickets/{id}` — Retrieve a specific ticket
+- `POST /api/v1/tickets/{id}/analyze` — Manually trigger synchronous AI analysis
+- `PATCH /api/v1/tickets/{id}/status` — Update ticket status
+- `GET /api/v1/analytics` — Fetch aggregated metrics for the dashboard
 
 ---
 
-## 📁 Project Structure
+## 🧠 Engineering Highlights
 
-```
-ai-service-desk/
-├── backend/
-│   ├── app/
-│   │   ├── main.py          # FastAPI app factory & lifespan
-│   │   ├── config.py        # Pydantic settings (env-based)
-│   │   ├── database.py      # SQLAlchemy engine & session
-│   │   ├── models.py        # ORM models
-│   │   ├── schemas.py       # Pydantic request/response schemas
-│   │   ├── routes.py        # All API endpoints
-│   │   └── ai_service.py    # Gemini integration & NLP utils
-│   ├── .env.example
-│   └── requirements.txt
-└── frontend/
-    ├── src/
-    │   ├── App.tsx           # Main application component
-    │   ├── App.css           # Global styles
-    │   ├── main.tsx          # React entry point
-    │   ├── types/index.ts    # TypeScript interfaces
-    │   ├── utils/api.ts      # API client
-    │   └── hooks/useToast.ts # Toast notification hook
-    ├── index.html
-    ├── vite.config.ts
-    └── package.json
-```
+- **Structured AI Outputs**: Instead of parsing unstructured text using regex, the system enforces strict JSON output from the LLM, passing it through Pydantic validators to ensure type safety.
+- **Fallback Model Handling**: The AI service gracefully falls back to secondary models (e.g., from `gemini-2.5-flash` to `gemini-2.5-pro`) if the primary model experiences high load (503) or unavailability (404).
+- **Background Processing**: AI analysis can take several seconds. The `POST /tickets` endpoint delegates this to a FastAPI `BackgroundTasks` worker, allowing the API to return a `201 Created` instantly.
+- **Separation of Concerns**: All AI logic is isolated in `ai_service.py`, making it incredibly easy to swap out the underlying LLM provider (e.g., to OpenAI or Anthropic) without touching the route handlers or business logic.
+- **Resilient Parsing**: Custom serialization logic handles unexpected edge cases from the LLM (e.g., gracefully joining lists into strings if the AI deviates from the schema).
+
+---
+
+## 🚧 Future Improvements
+
+- **Semantic Search using Embeddings**: Replace Jaccard similarity with vector embeddings (e.g., using pgvector) to identify similar tickets based on contextual meaning rather than raw token overlap.
+- **SLA Prediction**: Train a smaller model to predict resolution times based on historical ticket completion data.
+- **Auto-Ticket Routing**: Automatically assign tickets to specific engineer groups based on the AI-determined category.
+- **Multi-Tenant Support**: Extend the database schema to support multiple organizations in a single instance.
 
 ---
 
 ## 👨‍💻 Author
 
-**Your Name**  
-Full Stack Engineer · AI Systems Architect
-
-[![GitHub](https://img.shields.io/badge/GitHub-@yourusername-181717?style=flat-square&logo=github)](https://github.com/yourusername)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/yourprofile)
-[![Portfolio](https://img.shields.io/badge/Portfolio-yoursite.dev-6366f1?style=flat-square)](https://yoursite.dev)
+**Gourav Mittal**  
+*AI / Full Stack Developer*  
+[GitHub Profile](https://github.com/gouravmit)
 
 ---
 
-## 📄 License
+## ⭐ Call to Action
 
-MIT © 2024 Your Name
-
----
-
-<div align="center">
-  <sub>Built with 🧠 + ☕ — Enterprise-grade AI tooling for real teams</sub>
-</div>
+If you found this project interesting or helpful, please consider giving it a **star** ⭐️! It helps others discover the repository.
