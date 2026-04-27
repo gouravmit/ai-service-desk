@@ -10,6 +10,8 @@
 
 *An intelligent, full-stack ticketing system designed to eliminate manual IT triage bottlenecks.*
 
+<img src="assets/hero_ui_mockup.png" alt="AI Service Desk Interface" width="800">
+
 </div>
 
 ---
@@ -153,6 +155,16 @@ The backend exposes a clean RESTful API:
 - `POST /api/v1/tickets/{id}/analyze` — Manually trigger synchronous AI analysis
 - `PATCH /api/v1/tickets/{id}/status` — Update ticket status
 - `GET /api/v1/analytics` — Fetch aggregated metrics for the dashboard
+
+---
+
+## 📸 Application Previews
+
+<div align="center">
+  <img src="assets/analytics_ui_mockup.png" alt="Analytics Dashboard" width="800">
+  <br>
+  <em>Premium Analytics Dashboard - Track Resolution Rates & AI Confidence</em>
+</div>
 
 ---
 
